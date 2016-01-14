@@ -169,37 +169,242 @@ class myThread(threading.Thread):
             else:
                 passfloatingipcreate = passfloatingipcreate + 1
 
+        ##Till this point logical creation for each tenant is created ##
+
+        passrouterlist = 0
+        failrouterlist = 0
+
+        buildcommandrouterlist ='neutron router-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandrouterlist)
+
+        if ret !=0:
+                failrouterlist = failrouterlist + 1
+        else:
+                passrouterlist = passrouterlist + 1
+
+        passroutershow = 0
+        failroutershow = 0
+
+        for r in range (self.routercount):
+
+                buildcommandroutershow ='neutron router-show router'+str(r)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                ret = os.system(buildcommandroutershow)
+
+                if ret !=0:
+                        failroutershow = failroutershow + 1
+                else:
+                        passroutershow = passroutershow + 1
+
+        passnetworklist = 0
+        failnetworklist = 0
+        passnetworkshow = 0
+        failnetworkshow = 0
+
+        buildcommandnetworklist ='neutron net-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandnetworklist)
+
+        if ret !=0:
+                failnetworklist = failnetworklist + 1
+        else:
+                passnetworklist = passnetworklist + 1
+
+        for n in range (self.networkcount):
+
+                buildcommandnetworkshow ='neutron net-show network'+str(n)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                ret = os.system(buildcommandnetworkshow)
+
+                if ret !=0:
+                        failnetworkshow = failnetworkshow + 1
+                else:
+                        passnetworkshow = passnetworkshow + 1
+
+        passsubnetlist = 0
+        failsubnetlist = 0
+
+        buildcommandsubnetlist ='neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandsubnetlist)
+
+        if ret !=0:
+                failsubnetlist = failsubnetlist + 1
+        else:
+                passsubnetlist = passsubnetlist + 1
+
+        passsubnetshow = 0
+        failsubnetshow = 0
+
+        buildcommandsubnetshow ='for s in $(neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron subnet-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $s; done'
+        ret = os.system(buildcommandsubnetshow)
+
+        if ret !=0:
+                failsubnetshow = failsubnetshow + 1
+        else:
+                passsubnetshow = passsubnetshow + 1
+
+        passportlist = 0
+        failportlist = 0
+
+        buildcommandportlist ='neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandportlist)
+
+        if ret !=0:
+                failportlist = failportlist + 1
+        else:
+                passportlist = passportlist + 1
+
+        passportshow = 0
+        failportshow = 0
+
+        buildcommandportshow ='for p in $(neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron port-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $p; done'
+        ret = os.system(buildcommandportshow)
+
+        if ret !=0:
+                failportshow = failportshow + 1
+        else:
+                passportshow = passportshow + 1
+
+        passsecuritygrouplist = 0
+        failsecuritygrouplist = 0
+        passsecuritygroupshow = 0
+        failsecuritygroupshow = 0
+
+        buildcommandsecuritygrouplist ='neutron security-group-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandsecuritygrouplist)
+
+        if ret !=0:
+                failsecuritygrouplist = failsecuritygrouplist + 1
+        else:
+                passsecuritygrouplist = passsecuritygrouplist + 1
+
+        for sg in range (self.securitygroupcount):
+
+                buildcommandsecuritygroupshow ='neutron security-group-show securitygroup'+str(sg)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                ret = os.system(buildcommandsecuritygroupshow)
+
+                if ret !=0:
+                        failsecuritygroupshow = failsecuritygroupshow + 1
+                else:
+                        passsecuritygroupshow = passsecuritygroupshow + 1
+
+        passsecuritygrouprulelist = 0
+        failsecuritygrouprulelist = 0
+
+        buildcommandsecuritygrouprulelist ='neutron security-group-rule-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandsecuritygrouprulelist)
+
+        if ret !=0:
+                failsecuritygrouprulelist = failsecuritygrouprulelist + 1
+        else:
+                passsecuritygrouprulelist = passsecuritygrouprulelist + 1
+
+        passfloatingiplist = 0
+        failfloatingiplist = 0
+
+        buildcommandfloatingiplist ='neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        ret = os.system(buildcommandfloatingiplist)
+
+        if ret !=0:
+                failfloatingiplist = failfloatingiplist + 1
+        else:
+                passfloatingiplist = passfloatingiplist + 1
+
+        passfloatingipshow = 0
+        failfloatingipshow = 0
+
+        buildcommandfloatingipshow ='for f in $(neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron floatingip-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $f; done'
+        ret = os.system(buildcommandfloatingipshow)
+
+        if ret !=0:
+                failfloatingipshow = failfloatingipshow + 1
+        else:
+                passfloatingipshow = passfloatingipshow + 1
+
+
         print '####### summary of '+ self.tenant +' run #######'
         print 'For ' + self.tenant \
-            + ' floatingip PASS = %d FAIL = %d' \
+            + ' floatingip create PASS = %d FAIL = %d' \
             % (passfloatingipcreate, failfloatingipcreate)
 
         print 'For ' + self.tenant \
-	    + ' router PASS = %d FAIL = %d' \
+            + ' router create PASS = %d FAIL = %d' \
             % (passroutercreate, failroutercreate)
 
         print 'For ' + self.tenant \
-            + ' network PASS = %d FAIL = %d' \
+            + ' network create PASS = %d FAIL = %d' \
             % (passnetworkcreate, failnetworkcreate)
 
         print 'For ' + self.tenant \
-            + ' subnet PASS = %d FAIL = %d' \
+            + ' subnet create PASS = %d FAIL = %d' \
             % (passsubnetcreate, failsubnetcreate)
 
         print 'For ' + self.tenant \
-            + ' port PASS = %d FAIL = %d' \
+            + ' port create PASS = %d FAIL = %d' \
             % (passportcreate, failportcreate)
 
         print 'For ' + self.tenant \
-            + ' securitygroup PASS = %d FAIL = %d' \
+            + ' securitygroup create PASS = %d FAIL = %d' \
             % (passsecuritygroupcreate, failsecuritygroupcreate)
 
-	print 'For ' + self.tenant \
-            + ' securitygrouprule PASS = %d FAIL = %d' \
+        print 'For ' + self.tenant \
+            + ' securitygrouprule create PASS = %d FAIL = %d' \
             % (passsecuritygrouprulecreate,failsecuritygrouprulecreate)
 
-	totalapipass=passfloatingipcreate+passroutercreate+passnetworkcreate+passsubnetcreate+passportcreate+passsecuritygroupcreate+passsecuritygrouprulecreate
-	totalapifail=failfloatingipcreate+failroutercreate+failnetworkcreate+failsubnetcreate+failportcreate+failsecuritygroupcreate+failsecuritygrouprulecreate
+        print 'For ' + self.tenant \
+            + ' router list PASS = %d FAIL = %d' \
+            % (passrouterlist,failrouterlist)
+
+        print 'For ' + self.tenant \
+            + ' router show PASS = %d FAIL = %d' \
+            % (passroutershow,failroutershow)
+
+        print 'For ' + self.tenant \
+            + ' network list PASS = %d FAIL = %d' \
+            % (passnetworklist,failnetworklist)
+
+        print 'For ' + self.tenant \
+            + ' network show PASS = %d FAIL = %d' \
+            % (passnetworkshow,failnetworkshow)
+
+        print 'For ' + self.tenant \
+            + ' subnet list PASS = %d FAIL = %d' \
+            % (passsubnetlist,failsubnetlist)
+
+        print 'For ' + self.tenant \
+            + ' subnet show PASS = %d FAIL = %d' \
+            % (passsubnetshow,failsubnetshow)
+
+        print 'For ' + self.tenant \
+            + ' port list PASS = %d FAIL = %d' \
+            % (passportlist,failportlist)
+
+        print 'For ' + self.tenant \
+            + ' port show PASS = %d FAIL = %d' \
+            % (passportshow,failportshow)
+
+        print 'For ' + self.tenant \
+            + ' securitygroup list PASS = %d FAIL = %d' \
+            % (passsecuritygrouplist,failsecuritygrouplist)
+
+        print 'For ' + self.tenant \
+            + ' securitygroup show PASS = %d FAIL = %d' \
+            % (passsecuritygroupshow,failsecuritygroupshow)
+
+        print 'For ' + self.tenant \
+            + ' securitygrouprule list PASS = %d FAIL = %d' \
+            % (passsecuritygrouprulelist,failsecuritygrouprulelist)
+
+        print 'For ' + self.tenant \
+            + ' floatingip list PASS = %d FAIL = %d' \
+            % (passfloatingiplist,failfloatingiplist)
+
+        print 'For ' + self.tenant \
+            + ' floatingip show PASS = %d FAIL = %d' \
+            % (passfloatingipshow,failfloatingipshow)
+
+
+        totalapipass=passfloatingipcreate+passroutercreate+passnetworkcreate+passsubnetcreate+passportcreate+passsecuritygroupcreate+passsecuritygrouprulecreate+passrouterlist+passroutershow+passnetworklist+passnetworkshow+passsubnetlist+passsubnetshow+passportlist+passportshow+passsecuritygrouplist+passsecuritygroupshow+passsecuritygrouprulelist+passfloatingiplist+passfloatingipshow
+
+        totalapifail=failfloatingipcreate+failroutercreate+failnetworkcreate+failsubnetcreate+failportcreate+failsecuritygroupcreate+failsecuritygrouprulecreate+failrouterlist+failroutershow+failnetworklist+failnetworkshow+failsubnetlist+failsubnetshow+failportlist+failportshow+failsecuritygrouplist+failsecuritygroupshow+failsecuritygrouprulelist+failfloatingiplist+failfloatingipshow
+
 	totalapi=totalapipass+totalapifail
 	percentagepass=(totalapipass/totalapi*100)
 	percentagefail=(totalapifail/totalapi*100)
