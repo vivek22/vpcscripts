@@ -60,6 +60,7 @@ class myThread(threading.Thread):
             ret = os.system(buildcommandrouter)
             if ret != 0:
                 failroutercreate = failroutercreate + 1
+		sys.exit(0)
             else:
                 passroutercreate = passroutercreate + 1
 
@@ -79,6 +80,7 @@ class myThread(threading.Thread):
 
             if ret != 0:
                 failnetworkcreate = failnetworkcreate + 1
+		sys.exit(0)
             else:
                 passnetworkcreate = passnetworkcreate + 1
 
@@ -95,6 +97,7 @@ class myThread(threading.Thread):
 
                 if ret != 0:
                     failsubnetcreate = failsubnetcreate + 1
+		    sys.exit(0)
                 else:
                     psssubnetcreate = passsubnetcreate + 1
 
@@ -112,6 +115,7 @@ class myThread(threading.Thread):
 
             if ret != 0:
                 failportcreate = failportcreate + 1
+		sys.exit(0)
             else:
                 passportcreate = passportcreate + 1
 
@@ -132,6 +136,7 @@ class myThread(threading.Thread):
 
             if ret != 0:
                 failsecuritygroupcreate = failsecuritygroupcreate + 1
+		sys.exit(0)
             else:
                 passsecuritygroupcreate = passsecuritygroupcreate + 1
 
@@ -148,6 +153,7 @@ class myThread(threading.Thread):
                 if ret != 0:
                     failsecuritygrouprulecreate = \
                         failsecuritygrouprulecreate + 1
+		    sys.exit(0)	
                 else:
                     passsecuritygrouprulecreate = \
                         passsecuritygrouprulecreate + 1
@@ -166,6 +172,7 @@ class myThread(threading.Thread):
 
             if ret != 0:
                 failfloatingipcreate = failfloatingipcreate + 1
+		sys.exit(0)
             else:
                 passfloatingipcreate = passfloatingipcreate + 1
 
