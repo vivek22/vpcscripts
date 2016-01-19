@@ -12,7 +12,7 @@ import string
 import time
 import threading
 import thread
-
+import ConfigParser
 
 class myThread(threading.Thread):
 
@@ -20,28 +20,35 @@ class myThread(threading.Thread):
         threading.Thread.__init__(self)
         self.x = x
         self.tenant = 'tenant' + str(x)
-        self.networkcount = 5
-        self.subnetcount = 4
-        self.routercount = 10
-        self.portcount = 100
-        self.securitygroupcount = 50
-        self.securitygrouprulecount = 1
-        self.floatingipcount = 5
+
+        configParser = ConfigParser.RawConfigParser()
+        configFilePath = r'performanceconfig.txt'
+        configParser.read(configFilePath)
+        self.networkcount = configParser.get('QUOTA', 'networkcount')
+        self.subnetcount = configParser.get('QUOTA', 'subnetcount')
+        self.routercount = configParser.get('QUOTA', 'routercount')
+        self.portcount = configParser.get('QUOTA', 'portcount')
+        self.securitygroupcount = configParser.get('QUOTA', 'securitygroupcount')
+        self.securitygrouprulecount = configParser.get('QUOTA', 'securitygrouprulecount')
+        self.floatingipcount= configParser.get('QUOTA', 'floatingipcount')
+
+        self.OS_TENANT_NAME=configParser.get('ADMINRC','OS_TENANT_NAME')
+        self.OS_USERNAME=configParser.get('ADMINRC','OS_USERNAME')
+        self.OS_PASSWORD=configParser.get('ADMINRC','OS_PASSWORD')
+        self.OS_AUTH_URL=configParser.get('ADMINRC','OS_AUTH_URL')
 
     def run(self):
 
-        buildcommandtenantcreation = \
-            'keystone --os-tenant-name openstack --os-username admin --os-password Chang3M3 --os-auth-url https://identity.jiocloud.com:5000/v2.0/ tenant-create --name ' \
-            + self.tenant + ''
+        buildcommandtenantcreation = 'keystone --os-tenant-name '+self.OS_TENANT_NAME+' --os-username '+self.OS_USERNAME+' --os-password '+self.OS_PASSWORD+' --os-auth-url '+self.OS_AUTH_URL+' tenant-create --name '+ self.tenant+''
         ret = os.system(buildcommandtenantcreation)
 
         buildcommandusercreation = \
-            'keystone --os-tenant-name openstack --os-username admin --os-password Chang3M3 --os-auth-url https://identity.jiocloud.com:5000/v2.0/ user-create --name=' \
+            'keystone --os-tenant-name '+self.OS_TENANT_NAME+' --os-username '+self.OS_USERNAME+' --os-password '+self.OS_PASSWORD+' --os-auth-url '+self.OS_AUTH_URL+' user-create --name=' \
             + self.tenant + 'user --pass=pass'
         ret = os.system(buildcommandusercreation)
 
         buildcommandtenantuserroleassociation = \
-            'keystone --os-tenant-name openstack --os-username admin --os-password Chang3M3 --os-auth-url https://identity.jiocloud.com:5000/v2.0/ user-role-add --user=' \
+            'keystone --os-tenant-name '+self.OS_TENANT_NAME+' --os-username '+self.OS_USERNAME+' --os-password '+self.OS_PASSWORD+' --os-auth-url '+self.OS_AUTH_URL+' user-role-add --user=' \
             + self.tenant + 'user --tenant=' + self.tenant \
             + ' --role=Member'
         ret = os.system(buildcommandtenantuserroleassociation)
@@ -56,7 +63,7 @@ class myThread(threading.Thread):
                 + str(r) + ' --os-username ' + self.tenant \
                 + 'user --os-password pass --os-tenant-name ' \
                 + self.tenant \
-                + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                + ' --os-auth-url '+self.OS_AUTH_URL+''
             ret = os.system(buildcommandrouter)
             if ret != 0:
                 failroutercreate = failroutercreate + 1
@@ -75,7 +82,7 @@ class myThread(threading.Thread):
                 + ' --os-username ' + self.tenant \
                 + 'user --os-password pass --os-tenant-name ' \
                 + self.tenant \
-                + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                + ' --os-auth-url '+self.OS_AUTH_URL+''
             ret = os.system(buildcommandnetwork)
 
             if ret != 0:
@@ -92,7 +99,7 @@ class myThread(threading.Thread):
                     + '.0.0.0/24 --os-username ' + self.tenant \
                     + 'user --os-password pass --os-tenant-name ' \
                     + self.tenant \
-                    + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                    + ' --os-auth-url '+self.OS_AUTH_URL+''
                 ret = os.system(buildcommandsubnet)
 
                 if ret != 0:
@@ -110,7 +117,7 @@ class myThread(threading.Thread):
                 + str(p) + ' --os-username ' + self.tenant \
                 + 'user --os-password pass --os-tenant-name ' \
                 + self.tenant \
-                + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                + ' --os-auth-url '+self.OS_AUTH_URL+''
             ret = os.system(buildcommandport)
 
             if ret != 0:
@@ -131,7 +138,7 @@ class myThread(threading.Thread):
                 + ' --os-username ' + self.tenant \
                 + 'user --os-password pass --os-tenant-name ' \
                 + self.tenant \
-                + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                + ' --os-auth-url '+self.OS_AUTH_URL+''
             ret = os.system(buildcommandsecuritygroup)
 
             if ret != 0:
@@ -147,7 +154,7 @@ class myThread(threading.Thread):
                     + str(sg) + ' --os-username ' + self.tenant \
                     + 'user --os-password pass --os-tenant-name ' \
                     + self.tenant \
-                    + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                    + ' --os-auth-url '+self.OS_AUTH_URL+''
                 ret = os.system(buildcommandsecuritygrouprule)
 
                 if ret != 0:
@@ -167,7 +174,7 @@ class myThread(threading.Thread):
                 + self.tenant \
                 + 'user --os-password pass --os-tenant-name ' \
                 + self.tenant \
-                + ' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                + ' --os-auth-url '+self.OS_AUTH_URL+''
             ret = os.system(buildcommandfloatingip)
 
             if ret != 0:
@@ -181,7 +188,7 @@ class myThread(threading.Thread):
         passrouterlist = 0
         failrouterlist = 0
 
-        buildcommandrouterlist ='neutron router-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandrouterlist ='neutron router-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandrouterlist)
 
         if ret !=0:
@@ -194,7 +201,7 @@ class myThread(threading.Thread):
 
         for r in range (self.routercount):
 
-                buildcommandroutershow ='neutron router-show router'+str(r)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                buildcommandroutershow ='neutron router-show router'+str(r)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
                 ret = os.system(buildcommandroutershow)
 
                 if ret !=0:
@@ -207,7 +214,7 @@ class myThread(threading.Thread):
         passnetworkshow = 0
         failnetworkshow = 0
 
-        buildcommandnetworklist ='neutron net-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandnetworklist ='neutron net-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandnetworklist)
 
         if ret !=0:
@@ -217,7 +224,7 @@ class myThread(threading.Thread):
 
         for n in range (self.networkcount):
 
-                buildcommandnetworkshow ='neutron net-show network'+str(n)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                buildcommandnetworkshow ='neutron net-show network'+str(n)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
                 ret = os.system(buildcommandnetworkshow)
 
                 if ret !=0:
@@ -228,7 +235,7 @@ class myThread(threading.Thread):
         passsubnetlist = 0
         failsubnetlist = 0
 
-        buildcommandsubnetlist ='neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandsubnetlist ='neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandsubnetlist)
 
         if ret !=0:
@@ -239,7 +246,7 @@ class myThread(threading.Thread):
         passsubnetshow = 0
         failsubnetshow = 0
 
-        buildcommandsubnetshow ='for s in $(neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron subnet-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $s; done'
+        buildcommandsubnetshow ='for s in $(neutron subnet-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' | awk  \'{print $2}\'); do neutron subnet-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' $s; done'
         ret = os.system(buildcommandsubnetshow)
 
         if ret !=0:
@@ -250,7 +257,7 @@ class myThread(threading.Thread):
         passportlist = 0
         failportlist = 0
 
-        buildcommandportlist ='neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandportlist ='neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandportlist)
 
         if ret !=0:
@@ -261,7 +268,7 @@ class myThread(threading.Thread):
         passportshow = 0
         failportshow = 0
 
-        buildcommandportshow ='for p in $(neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron port-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $p; done'
+        buildcommandportshow ='for p in $(neutron port-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' | awk  \'{print $2}\'); do neutron port-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' $p; done'
         ret = os.system(buildcommandportshow)
 
         if ret !=0:
@@ -274,7 +281,7 @@ class myThread(threading.Thread):
         passsecuritygroupshow = 0
         failsecuritygroupshow = 0
 
-        buildcommandsecuritygrouplist ='neutron security-group-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandsecuritygrouplist ='neutron security-group-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandsecuritygrouplist)
 
         if ret !=0:
@@ -284,7 +291,7 @@ class myThread(threading.Thread):
 
         for sg in range (self.securitygroupcount):
 
-                buildcommandsecuritygroupshow ='neutron security-group-show securitygroup'+str(sg)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+                buildcommandsecuritygroupshow ='neutron security-group-show securitygroup'+str(sg)+' --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
                 ret = os.system(buildcommandsecuritygroupshow)
 
                 if ret !=0:
@@ -295,7 +302,7 @@ class myThread(threading.Thread):
         passsecuritygrouprulelist = 0
         failsecuritygrouprulelist = 0
 
-        buildcommandsecuritygrouprulelist ='neutron security-group-rule-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandsecuritygrouprulelist ='neutron security-group-rule-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandsecuritygrouprulelist)
 
         if ret !=0:
@@ -306,7 +313,7 @@ class myThread(threading.Thread):
         passfloatingiplist = 0
         failfloatingiplist = 0
 
-        buildcommandfloatingiplist ='neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/'
+        buildcommandfloatingiplist ='neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+''
         ret = os.system(buildcommandfloatingiplist)
 
         if ret !=0:
@@ -317,7 +324,7 @@ class myThread(threading.Thread):
         passfloatingipshow = 0
         failfloatingipshow = 0
 
-        buildcommandfloatingipshow ='for f in $(neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ | awk  \'{print $2}\'); do neutron floatingip-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url https://identity.jiocloud.com:5000/v2.0/ $f; done'
+        buildcommandfloatingipshow ='for f in $(neutron floatingip-list --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' | awk  \'{print $2}\'); do neutron floatingip-show --os-username '+self.tenant+'user --os-password pass --os-tenant-name '+self.tenant+' --os-auth-url '+self.OS_AUTH_URL+' $f; done'
         ret = os.system(buildcommandfloatingipshow)
 
         if ret !=0:
