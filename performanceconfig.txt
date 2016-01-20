@@ -1,0 +1,17 @@
+[QUOTA]
+
+networkcount = 5
+subnetcount = 4
+routercount = 10
+portcount = 100
+securitygroupcount = 50
+securitygrouprulecount = 1
+floatingipcount = 5
+
+[ADMINRC]
+
+OS_TENANT_NAME=openstack
+OS_USERNAME=admin
+OS_PASSWORD=Chang3M3
+OS_AUTH_URL=https://identity.jiocloud.com:5000/v2.0/
+
